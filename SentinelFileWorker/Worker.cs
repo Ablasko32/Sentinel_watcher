@@ -1,16 +1,19 @@
-using LogerServices.Services;
-using LogWorker.Configuration;
+using SentinelCore.Services;
+using SentinelFileWorker.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace LogWorker
+namespace SentinelFileWorker
 {
     public class Worker : BackgroundService
     {
         private readonly int _contextLines;
+
         private readonly ILogger<Worker> _logger;
         private readonly IOllamaService _ollamaService;
         private readonly INotificationService _notificationService;
+
         private readonly LogerWorkerOptions _workerOptions;
+
         private readonly Dictionary<string, long> _filePositions = new();
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly string[] triggerKeywords = { "ERROR", "CRITICAL", "FATAL", "EXCEPTION" };
@@ -26,7 +29,7 @@ namespace LogWorker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Logger Worker Started. Searching log files...");
+            _logger.LogInformation("Sentinel_Watcher Started. Searching log files...");
 
             if (!Directory.Exists(_workerOptions.Path))
             {

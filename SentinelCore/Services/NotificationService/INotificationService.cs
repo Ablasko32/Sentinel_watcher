@@ -1,4 +1,4 @@
-﻿namespace LogerServices.Services
+﻿namespace SentinelCore.Services
 {
     public interface INotificationService
     {

@@ -1,9 +1,9 @@
-﻿using LogerServices.Configuration;
+﻿using SentinelCore.Configuration;
 using Microsoft.Extensions.Options;
 using OllamaSharp;
 using System.Text;
 
-namespace LogerServices.Services
+namespace SentinelCore.Services
 {
     public class OllamaService : IOllamaService
     {

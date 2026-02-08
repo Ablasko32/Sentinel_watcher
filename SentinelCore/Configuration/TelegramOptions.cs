@@ -1,4 +1,4 @@
-﻿namespace LogerServices.Configuration
+﻿namespace SentinelCore.Configuration
 {
     public class TelegramOptions
     {

@@ -1,4 +1,4 @@
-﻿namespace LogWorker.Configuration
+﻿namespace SentinelFileWorker.Configuration
 {
     public class LogerWorkerOptions
     {

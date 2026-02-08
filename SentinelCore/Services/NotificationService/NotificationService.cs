@@ -1,8 +1,8 @@
-﻿using LogerServices.Configuration;
+﻿using SentinelCore.Configuration;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 
-namespace LogerServices.Services
+namespace SentinelCore.Services
 {
     public class NotificationService: INotificationService
     {
