@@ -1,0 +1,46 @@
+<nav class="bg-surface-300 p-4 h-full flex flex-col">
+  <h2 class="mb-10 flex justify-center items-center dark:text-white">
+    <img src="eye-horus.svg" alt="Sentinel Watcher Logo" class="w-8 h-8 inline-block" />
+  </h2>
+  <ul class="flex flex-col gap-4">
+    <li>
+      <a
+        routerLinkActive="border shadow-md border-2"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLink="/"
+        aria-label="Home"
+        class="w-full flex items-center justify-center p-3 rounded-md"
+      >
+        <i class="pi pi-home"></i>
+      </a>
+    </li>
+    <li>
+      <a
+        routerLinkActive="border shadow-md border-2"
+        routerLink="/logs-list"
+        aria-label="List"
+        class="w-full flex items-center justify-center p-3 rounded-md"
+      >
+        <i class="pi pi-list"></i>
+      </a>
+    </li>
+    <li>
+      <a
+        routerLinkActive="border shadow-md border-2"
+        routerLink="/settings"
+        aria-label="Settings"
+        class="w-full flex items-center justify-center p-3 rounded-md"
+      >
+        <i class="pi pi-cog"></i>
+      </a>
+    </li>
+  </ul>
+
+  <div class="mt-auto">
+    <p-button
+      (onClick)="switchTheme()"
+      aria-label="ThemeSwitch"
+      [icon]="getCurrentTheme()"
+    ></p-button>
+  </div>
+</nav>
