@@ -1,0 +1,18 @@
+<div class="flex items-center gap-4">
+  @if (showBackButton()) {
+    <a routerLink="../">
+      <p-button link="true" icon=" pi pi-arrow-left"></p-button>
+    </a>
+  }
+  <div class="flex flex-col gap-1">
+    <div class="text-xl capitalize font-semibold">
+      <ng-content select="[header]"></ng-content>
+    </div>
+    <div class="text-sm tracking-wide">
+      <ng-content select="[subtitle]"></ng-content>
+    </div>
+  </div>
+</div>
+<div class="mt-8">
+  <ng-content select="[body]"></ng-content>
+</div>

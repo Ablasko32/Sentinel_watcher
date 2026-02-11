@@ -1,14 +1,19 @@
-<div class="flex flex-col gap-6">
-  <div class="flex flex-col gap-1">
-    <div class="text-3xl font-bold flex items-center gap-2">
-      <i class="pi pi-list"></i>
-      <ng-content select="[title]"></ng-content>
+<div class="flex flex-col gap-6 h-full">
+  <!-- Title and subtitle -->
+  <div class="flex gap-8 items-center">
+    <div class="flex flex-col gap-1">
+      <div class="text-3xl font-bold flex items-center gap-2">
+        <i class="pi pi-list"></i>
+        <ng-content select="[title]"></ng-content>
+      </div>
+      <div class="text-sm tracking-wide ml-4">
+        <ng-content select="[subtitle]"></ng-content>
+      </div>
     </div>
-    <div class="text-sm tracking-wide ml-4">
-      <ng-content select="[subtitle]"></ng-content>
-    </div>
+    <!-- Additional content -->
+    <ng-content select="[extras]"></ng-content>
   </div>
-  <div>
+  <div class="flex-1">
     <ng-content select="[content]"></ng-content>
   </div>
 </div>

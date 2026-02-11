@@ -1,3 +1,3 @@
 :host {
-  @apply grid grid-cols-[auto_1fr] h-svh w-full;
+  @apply grid grid-cols-[auto_1fr] h-svh w-full max-h-svh overflow-y-hidden;
 }

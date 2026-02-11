@@ -1,0 +1,104 @@
+<!-- stripedRows  -->
+<!--showGridlines  -->
+<!-- [loading]="true" -->
+<!-- [paginator]="true" [rows]="5" -->
+<!-- [rowsPerPageOptions]="[5, 10, 20] -->
+<p-table
+  [scrollable]="true"
+  scrollHeight="400px"
+  class="h-full"
+  [paginator]="true"
+  [rows]="5"
+  stripedRows
+  [rowsPerPageOptions]="[20, 40, 60]"
+  [value]="logData"
+  dataKey="id"
+>
+  <ng-template #caption> filters </ng-template>
+  <ng-template #header>
+    <tr>
+      <th class="w-1"></th>
+      <th pSortableColumn="level">
+        <div class="flex items-center gap-2">Level<p-sortIcon field="level" /></div>
+      </th>
+      <th>Message</th>
+      <th pSortableColumn="timeStamp">
+        <div class="flex items-center gap-2">TimeStamp<p-sortIcon field="timeStamp" /></div>
+      </th>
+      <th>Source</th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-log let-expanded="expanded">
+    <tr>
+      <td>
+        <p-button
+          type="button"
+          pRipple
+          [pRowToggler]="log"
+          [text]="true"
+          severity="secondary"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+        />
+      </td>
+      <td>
+        <p-tag
+          class="capitalize shadow-md"
+          [value]="log.level"
+          [severity]="getBadgeSeverity(log.level)"
+        />
+      </td>
+      <td>{{ log.message }}</td>
+      <td>{{ log.timeStamp | date: 'short' }}</td>
+      <td>{{ log.source }}</td>
+      <td>
+        <a><p-button (onClick)="goToLogDetails(log.id)" icon="pi pi-chevron-right"></p-button></a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #expandedrow let-log>
+    <tr>
+      <td colspan="6">
+        <p-splitter class="mb-4" [panelSizes]="[70, 30]">
+          <ng-template #panel>
+            <div class="p-4 flex flex-col gap-2">
+              <h5 class="font-medium border-b border-gray-200 flex items-center gap-1">
+                <i class="pi pi-info-circle"></i>Details for Log #{{ log.id }}
+              </h5>
+              <div class="flex justify-start gap-1 flex-col">
+                <p class="flex items-center gap-2">
+                  <span class="font-semibold">Level:</span
+                  ><span class="uppercase tracking-wide font-medium">{{ log.level }}</span>
+                </p>
+                <p class="flex items-center gap-2">
+                  <span class="font-semibold">Source:</span> {{ log.source }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <span class="font-semibold">TimeStamp:</span> {{ log.timeStamp | date: 'medium' }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <span class="font-semibold">Stack Trace:</span> {{ log.stackTrace ?? '/' }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <span class="font-semibold">Exception type:</span>{{ log.exceptionType ?? '/' }}
+                </p>
+
+                <div>
+                  <p><span class="font-semibold">Full Message:</span></p>
+                  <p>{{ log.message ?? '/' }}</p>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #panel>
+            <div class="p-4 flex flex-col gap-2">
+              <h5 class="font-medium border-b border-gray-200 flex items-center gap-1">
+                <i class="pi pi-bolt"></i>Actions
+              </h5>
+            </div>
+          </ng-template>
+        </p-splitter>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
