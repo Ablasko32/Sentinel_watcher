@@ -1,0 +1,55 @@
+:root {
+  --bg: #f6f5f2; /* dirty/off-white background for light mode */
+  --surface: #ffffff;
+  --text-primary: #0b0b0b;
+  --primary-btn-bg: #0b0b0b; /* almost black primary button in light */
+  --primary-btn-text: #ffffff;
+  --primary-btn-hover: #222222;
+}
+
+/* dark mode variables applied when ThemeService adds .sentinel-dark to the root */
+.sentinel-dark,
+.sentinel-dark body {
+  --bg: #060606; /* near-black app background */
+  --surface: #070707;
+  --text-primary: #e6ffe9;
+  --primary-btn-bg: #00ff66; /* neon green primary button */
+  --primary-btn-text: #001a00;
+  --primary-btn-hover: #00e659;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* PrimeNG primary button overrides to use our variables */
+.p-button.p-button-primary {
+  background-color: var(--primary-btn-bg);
+  color: var(--primary-btn-text);
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.p-button.p-button-primary:hover,
+.p-button.p-button-primary:focus {
+  background-color: var(--primary-btn-hover);
+  color: var(--primary-btn-text);
+}
+
+/* Make sure links and other primary accents pick up the semantic primary when available */
+a,
+.link-primary {
+  color: var(--primary-btn-bg);
+}
+
+/* subtle surfaces */
+.surface {
+  background: var(--surface);
+}

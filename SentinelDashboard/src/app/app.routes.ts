@@ -1,23 +1,28 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
   {
-    path: '',
+    path: 'login',
     loadComponent: () =>
-      import('./features/dashboard/pages/dashboard-page/dashboard-page').then(
-        (m) => m.DashboardPage,
-      ),
+      import('./features/auth/pages/login-page/login-page').then((m) => m.LoginPage),
   },
   {
-    path: 'logs-list',
+    path: 'app',
     loadComponent: () =>
-      import('./features/log-list/pages/log-list-page/log-list-page').then((m) => m.LogListPage),
-  },
-  {
-    path: 'logs-list/:logId',
-    loadComponent: () =>
-      import('./features/log-list/pages/log-details-page/log-details-page').then(
-        (m) => m.LogDetailsPage,
-      ),
+      import('./shared/components/layouts/main-layout/main-layout').then((m) => m.MainLayout),
+    children: [
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then((m) => m.DashboardRoutes),
+      },
+
+      {
+        path: 'logs',
+        loadChildren: () =>
+          import('./features/log-list/log-list.routes').then((m) => m.LogListRoutes),
+      },
+    ],
   },
 ];

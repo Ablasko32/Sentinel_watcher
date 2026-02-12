@@ -33,6 +33,7 @@
     <tr>
       <td>
         <p-button
+          size="small"
           type="button"
           pRipple
           [pRowToggler]="log"
@@ -52,7 +53,14 @@
       <td>{{ log.timeStamp | date: 'short' }}</td>
       <td>{{ log.source }}</td>
       <td>
-        <a><p-button (onClick)="goToLogDetails(log.id)" icon="pi pi-chevron-right"></p-button></a>
+        <a
+          ><p-button
+            raised
+            size="small"
+            (onClick)="goToLogDetails(log.id)"
+            icon="pi pi-chevron-right"
+          ></p-button
+        ></a>
       </td>
     </tr>
   </ng-template>

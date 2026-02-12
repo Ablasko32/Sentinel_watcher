@@ -1,46 +1,53 @@
-<nav class="bg-surface-300 p-4 h-full flex flex-col">
-  <h2 class="mb-10 flex justify-center items-center dark:text-white">
-    <img src="eye-horus.svg" alt="Sentinel Watcher Logo" class="w-8 h-8 inline-block" />
-  </h2>
-  <ul class="flex flex-col gap-4">
-    <li>
-      <a
-        routerLinkActive="border shadow-md border-2"
-        [routerLinkActiveOptions]="{ exact: true }"
-        routerLink="/"
-        aria-label="Home"
-        class="w-full flex items-center justify-center p-3 rounded-md"
-      >
-        <i class="pi pi-home"></i>
-      </a>
-    </li>
-    <li>
-      <a
-        routerLinkActive="border shadow-md border-2"
-        routerLink="/logs-list"
-        aria-label="List"
-        class="w-full flex items-center justify-center p-3 rounded-md"
-      >
-        <i class="pi pi-list"></i>
-      </a>
-    </li>
-    <li>
-      <a
-        routerLinkActive="border shadow-md border-2"
-        routerLink="/settings"
-        aria-label="Settings"
-        class="w-full flex items-center justify-center p-3 rounded-md"
-      >
-        <i class="pi pi-cog"></i>
-      </a>
-    </li>
-  </ul>
+<div class="m-2 h-[calc(100vh-1rem)]">
+  <nav
+    class="py-4 px-3 bg-surface-200 dark:bg-surface-900 h-full flex flex-col border border-primary/10 shadow-md dark:border-primary/10 rounded-md"
+  >
+    <h2 class="mb-10 flex flex-col justify-center items-center">
+      <img src="eye-horus.svg" alt="Sentinel Watcher Logo" class="w-8 h-8 inline-block" />
+      <p class="text-center tracking-widest text-[8px] font-semibold dark:text-primary">Sentinel</p>
+    </h2>
+    <ul class="flex flex-col gap-4">
+      <li>
+        <a
+          pTooltip="Dashboard"
+          showDelay="1000"
+          routerLinkActive=" shadow-md border-2 border-primary"
+          [routerLinkActiveOptions]="{ exact: true }"
+          routerLink="/app/dashboard"
+          aria-label="Home"
+          class="w-full flex items-center justify-center p-2.5 rounded-md"
+        >
+          <i class="pi pi-home dark:text-primary"></i>
+        </a>
+      </li>
+      <li>
+        <a
+          pTooltip="Logs view"
+          showDelay="1000"
+          routerLinkActive=" shadow-md border-2 border-primary"
+          routerLink="/app/logs"
+          aria-label="List"
+          class="w-full flex items-center justify-center p-2.5 rounded-md"
+        >
+          <i class="pi pi-list dark:text-primary"></i>
+        </a>
+      </li>
+      <li>
+        <a
+          pTooltip="Settings"
+          showDelay="1000"
+          routerLinkActive=" shadow-md border-2 border-primary"
+          routerLink="/settings"
+          aria-label="Settings"
+          class="w-full flex items-center justify-center p-2.5 rounded-md"
+        >
+          <i class="pi pi-cog dark:text-primary"></i>
+        </a>
+      </li>
+    </ul>
 
-  <div class="mt-auto">
-    <p-button
-      (onClick)="switchTheme()"
-      aria-label="ThemeSwitch"
-      [icon]="getCurrentTheme()"
-    ></p-button>
-  </div>
-</nav>
+    <div class="mt-auto flex items-center justify-center">
+      <app-theme-switch></app-theme-switch>
+    </div>
+  </nav>
+</div>

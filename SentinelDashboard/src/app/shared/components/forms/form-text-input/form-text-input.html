@@ -1,0 +1,30 @@
+<div>
+  <p-float-label variant="on">
+    @if (type() === 'password') {
+      <p-password
+        fluid
+        [invalid]="isInvalid()"
+        [formControl]="control()"
+        [toggleMask]="true"
+        [feedback]="false"
+        [id]="getId()"
+      />
+    } @else {
+      <input
+        [type]="type()"
+        pInputText
+        fluid
+        [invalid]="isInvalid()"
+        [formControl]="control()"
+        [id]="getId()"
+      />
+    }
+
+    @if (label()) {
+      <label class="font-base text-xs tracking-widest" [id]="getId()">{{ label() }}</label>
+    }
+  </p-float-label>
+  @if (isInvalid()) {
+    <p-message severity="error" size="small" variant="simple"> {{ getErrorMessage() }}</p-message>
+  }
+</div>

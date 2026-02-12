@@ -5,6 +5,7 @@ import Aura from '@primeuix/themes/Aura';
 
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
+import { SentinelPreset } from './lib/sentinel.preset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: SentinelPreset,
         options: {
           darkModeSelector: '.sentinel-dark',
           cssLayer: {

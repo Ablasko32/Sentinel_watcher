@@ -1,0 +1,39 @@
+<div class="border border-primary/10 shadow-md p-8 rounded-md dark:border-primary/20">
+  <div class="flex flex-col mb-10">
+    <div class="w-full flex items-center justify-center">
+      <img class=" " src="eye-horus.svg" alt="Sentinel Watcher Logo" class="w-16" />
+    </div>
+    <h2 class="text-xl font-medium tracking-wide uppercase">Login</h2>
+    <p class="text-sm text-surface-400">Please enter your email and password to login</p>
+  </div>
+  <form class="flex flex-col gap-6" (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+    <app-form-text-input
+      type="email"
+      [control]="loginForm.controls.email"
+      label="Email"
+      [errors]="{
+        required: 'Email is required',
+        email: 'Invalid email',
+      }"
+    ></app-form-text-input>
+    <app-form-text-input
+      type="password"
+      [control]="loginForm.controls.password"
+      label="Password"
+      [errors]="{
+        required: 'Password is required',
+      }"
+    ></app-form-text-input>
+
+    <p-button
+      raised
+      [loading]="isLoading()"
+      [disabled]="loginForm.invalid"
+      class="mt-4"
+      fluid
+      type="submit"
+      size="small"
+      label="Login"
+    ></p-button>
+  </form>
+</div>
