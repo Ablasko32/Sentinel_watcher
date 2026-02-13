@@ -14,12 +14,19 @@ namespace SentinelWebApi.Extensions
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            foreach (var role in new[] { Role.Admin, Role.User })
+            try
             {
-                if (!await roleManager.RoleExistsAsync(role.ToString()))
+                foreach (var role in Roles)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                    if (!await roleManager.RoleExistsAsync(role.ToString()))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Failed to seed roles");
             }
 
             return app;
@@ -34,7 +41,14 @@ namespace SentinelWebApi.Extensions
             var migrations = await dbContext.Database.GetPendingMigrationsAsync();
             if (migrations.Any())
             {
-                await dbContext.Database.MigrateAsync();
+                try
+                {
+                    await dbContext.Database.MigrateAsync();
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Failed to migrate database");
+                }
             }
 
             return app;
@@ -45,16 +59,26 @@ namespace SentinelWebApi.Extensions
             using var scope = app.ApplicationServices.CreateScope();
 
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            var adminEmail = "admin@sentinel.com";
-            var adminPassword = "SentinelAdmin";
+            var admin = configuration.GetSection("AdminUser");
+            if (!admin.Exists())
+            {
+                throw new Exception("AdminUser configuration section is missing.");
+            }
+            var adminEmail = admin.GetValue<string>("Email");
+            var adminPassword = admin.GetValue<string>("Password");
+            if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
+            {
+                throw new Exception("AdminUser Email or Password is missing in configuration.");
+            }
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
                 adminUser = new AppUser
                 {
-                    UserName = adminEmail,
+                    UserName = "Admin",
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
@@ -62,6 +86,10 @@ namespace SentinelWebApi.Extensions
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, Role.Admin.ToString());
+                }
+                else
+                {
+                    throw new Exception("Failed to create Admin user");
                 }
             }
 
@@ -84,10 +112,20 @@ namespace SentinelWebApi.Extensions
             // Cookie settings
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = "SentinelCookie";
+                options.Cookie.Name = "SentinelAuthCookie";
+                options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                options.Cookie.IsEssential = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = true;
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                }
+                else
+                {
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                }
             });
 
             return builder;
