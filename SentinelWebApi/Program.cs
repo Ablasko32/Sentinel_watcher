@@ -1,14 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using SentinelCore.DAL;
-using SentinelCore.DAL.Data.Models;
-using SentinelCore.DAL.Repositories;
-using SentinelWebApi.Services;
-using Microsoft.AspNetCore.Identity;
+using SentinelWebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -17,7 +12,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Sentinel API",
+        Title = "SentinelWatcher API",
         Version = "v1"
     });
 });
@@ -28,35 +23,13 @@ builder.Services.AddDbContext<SentinelContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-//Identity 
-builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-}).AddEntityFrameworkStores<SentinelContext>()
-.AddDefaultTokenProviders();
-
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Cookie settings
-    options.Cookie.Name = "SentinelCookie";
-    options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromDays(1);
-
-    //options.LoginPath = "/Identity/Account/Login";
-    //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.SlidingExpiration = true;
-});
-
+//Identity and cookies
+builder.ConfigureIdentity();
 
 //repositories
-builder.Services.AddScoped<ILogErrorRepository, LogErrorRepository>();
+builder.ConfigureRepositoryLayer();
 //services
-builder.Services.AddScoped<ILogErrorService, LogErrorService>();
+builder.ConfigureServiceLayer();
 
 var app = builder.Build();
 
@@ -69,10 +42,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Seed roles and admin user and migrate database if pending migrations exist
+await app.MigrateDbAsync();
+await app.SeedRolesAsync();
+await app.SeedAdminUserAsync();
 
 app.Run();
