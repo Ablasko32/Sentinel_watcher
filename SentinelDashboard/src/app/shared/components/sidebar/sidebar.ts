@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeSwitch } from '../theme-switch/theme-switch';
 import { TooltipModule } from 'primeng/tooltip';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, ThemeSwitch, TooltipModule],
+  imports: [RouterLink, RouterLinkActive, ThemeSwitch, TooltipModule, AvatarModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })

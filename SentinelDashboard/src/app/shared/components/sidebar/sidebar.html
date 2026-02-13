@@ -11,7 +11,7 @@
         <a
           pTooltip="Dashboard"
           showDelay="1000"
-          routerLinkActive=" shadow-md border-2 border-primary"
+          routerLinkActive=" shadow-md border-2 border-primary/20"
           [routerLinkActiveOptions]="{ exact: true }"
           routerLink="/app/dashboard"
           aria-label="Home"
@@ -24,7 +24,7 @@
         <a
           pTooltip="Logs view"
           showDelay="1000"
-          routerLinkActive=" shadow-md border-2 border-primary"
+          routerLinkActive=" shadow-md border-2 border-primary/20"
           routerLink="/app/logs"
           aria-label="List"
           class="w-full flex items-center justify-center p-2.5 rounded-md"
@@ -36,7 +36,7 @@
         <a
           pTooltip="Settings"
           showDelay="1000"
-          routerLinkActive=" shadow-md border-2 border-primary"
+          routerLinkActive=" shadow-md border-2 border-primary/20"
           routerLink="/settings"
           aria-label="Settings"
           class="w-full flex items-center justify-center p-2.5 rounded-md"
@@ -46,8 +46,9 @@
       </li>
     </ul>
 
-    <div class="mt-auto flex items-center justify-center">
+    <div class="mt-auto flex gap-7 flex-col items-center justify-center">
       <app-theme-switch></app-theme-switch>
+      <p-avatar icon="pi pi-user" />
     </div>
   </nav>
 </div>
