@@ -7,48 +7,40 @@
       <p class="text-center tracking-widest text-[8px] font-semibold dark:text-primary">Sentinel</p>
     </h2>
     <ul class="flex flex-col gap-4">
-      <li>
-        <a
-          pTooltip="Dashboard"
-          showDelay="1000"
-          routerLinkActive=" shadow-md border-2 border-primary/20"
-          [routerLinkActiveOptions]="{ exact: true }"
-          routerLink="/app/dashboard"
-          aria-label="Home"
-          class="w-full flex items-center justify-center p-2.5 rounded-md"
-        >
-          <i class="pi pi-home dark:text-primary"></i>
-        </a>
-      </li>
-      <li>
-        <a
-          pTooltip="Logs view"
-          showDelay="1000"
-          routerLinkActive=" shadow-md border-2 border-primary/20"
-          routerLink="/app/logs"
-          aria-label="List"
-          class="w-full flex items-center justify-center p-2.5 rounded-md"
-        >
-          <i class="pi pi-list dark:text-primary"></i>
-        </a>
-      </li>
-      <li>
-        <a
-          pTooltip="Settings"
-          showDelay="1000"
-          routerLinkActive=" shadow-md border-2 border-primary/20"
-          routerLink="/settings"
-          aria-label="Settings"
-          class="w-full flex items-center justify-center p-2.5 rounded-md"
-        >
-          <i class="pi pi-cog dark:text-primary"></i>
-        </a>
-      </li>
+      @for (item of menuItems; track $index) {
+        <li>
+          <a
+            [pTooltip]="item.label"
+            showDelay="1000"
+            routerLinkActive=" shadow-md border-2 border-primary/20"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLink]="item.route"
+            [attr.aria-label]="item.label"
+            class="w-full flex items-center justify-center p-2.5 rounded-md"
+          >
+            <i [class]="item.icon + ' dark:text-primary'"></i>
+          </a>
+        </li>
+      }
     </ul>
 
     <div class="mt-auto flex gap-7 flex-col items-center justify-center">
       <app-theme-switch></app-theme-switch>
-      <p-avatar icon="pi pi-user" />
+      <p-avatar styleClass="cursor-pointer" (click)="op.toggle($event)" icon="pi pi-user" />
+      <p-popover #op>
+        <div class="flex flex-col items-start gap-2">
+          <p class="font-medium">{{ authService.user()?.username }}</p>
+          <p class="text-sm text-gray-500">{{ authService.user()?.email }}</p>
+          <p-button
+            size="small"
+            [loading]="isLoading()"
+            label="Logout"
+            severity="danger"
+            (click)="logout()"
+            class="w-full mt-2"
+          ></p-button>
+        </div>
+      </p-popover>
     </div>
   </nav>
 </div>

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using SentinelCore.DAL.Data.Models;
 using SentinelWebApi.DTOs;
 using SentinelWebApi.DTOs.ApiResponse;
+using SentinelWebApi.DTOs.Auth;
+using SentinelWebApi.Mapping.Auth;
 using static SentinelCore.DAL.Data.Models.AppRoles;
 
 namespace SentinelWebApi.Controllers
@@ -24,7 +26,7 @@ namespace SentinelWebApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<ApiResponse>> LoginUserAsync([FromBody] LoginUserDTO dto)
+        public async Task<ActionResult<ApiResponse<UserDTO>>> LoginUserAsync([FromBody] LoginUserDTO dto)
         {
             try
             {
@@ -35,10 +37,10 @@ namespace SentinelWebApi.Controllers
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(user, dto.Password, isPersistent: false, lockoutOnFailure: false);
-
                 if (result.Succeeded)
                 {
-                    return Ok(ApiResponse.ApiSuccess("Login successful"));
+                    var roles = await _userManager.GetRolesAsync(user);
+                    return Ok(ApiResponse<UserDTO>.ApiSuccess(user.ToUserDTO(roles),"Login successful"));
                 }
                 else
                 {
@@ -108,11 +110,57 @@ namespace SentinelWebApi.Controllers
             }
         }
 
-        [HttpGet("check")]
+        [HttpGet("status")]
         [Authorize]
-        public ActionResult<ApiResponse> CheckAuthAsync()
+        public async Task<ActionResult<ApiResponse<UserDTO>>> CheckAuthAsync()
         {
-            return Ok(ApiResponse.ApiSuccess("Authenticated"));
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized(ApiResponse.ApiError("User not authenticated"));
+                }
+                var roles = await _userManager.GetRolesAsync(user);
+
+                return Ok(ApiResponse<UserDTO>.ApiSuccess(user.ToUserDTO(roles)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while trying to check authentication.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ApiResponse.ApiError("Unexpected error occurred while trying to check authentication"));
+            }
+        }
+
+        [HttpPost("create")]
+        [Authorize(Roles = Admin)]
+        public async Task<ActionResult<ApiResponse>> CreateUserAsync([FromBody] CreateUserDTO dto)
+        {
+            try
+            {
+                var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+                if (existingUser != null)
+                {
+                    return Conflict(ApiResponse.ApiError("A user with the provided email already exists"));
+                }
+                var newUser = dto.ToAppUser();
+                var result = await _userManager.CreateAsync(newUser);
+                if (result.Succeeded)
+                {
+                    return Ok(ApiResponse.ApiSuccess("User created successfully"));
+                }
+                else
+                {
+                    throw new Exception("Identity failed to create the user.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while trying to create a new user.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ApiResponse.ApiError("Unexpected error occurred while trying to create a new user"));
+            }
         }
     }
 }

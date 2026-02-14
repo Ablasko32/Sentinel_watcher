@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
+import { MessageModule } from 'primeng/message';
 import { Button } from 'primeng/button';
 import { AuthService } from '../../../../core/api/services/auth-service';
 import { FormTextInput } from '../../../../shared/components/forms/form-text-input/form-text-input';
@@ -13,7 +14,7 @@ interface ILoginForm {
 
 @Component({
   selector: 'app-login-card',
-  imports: [PasswordModule, ReactiveFormsModule, Button, FormTextInput],
+  imports: [PasswordModule, ReactiveFormsModule, Button, FormTextInput, MessageModule],
   templateUrl: './login-card.html',
   styleUrl: './login-card.css',
 })
@@ -44,6 +45,7 @@ export class LoginCard {
     this.authService.loginUser(data).subscribe({
       next: (res) => {
         if (res.success) {
+          this.authService.user.set(res.data);
           this.router.navigate(['app', 'dashboard']);
         } else {
           this.errorMessage.set(res.message ?? 'Login failed. Please try again.');

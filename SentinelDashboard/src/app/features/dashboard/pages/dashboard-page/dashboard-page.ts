@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-
-import { ButtonModule } from 'primeng/button';
+import { Component, inject } from '@angular/core';
+import { AuthService } from '../../../../core/api/services/auth-service';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [ButtonModule],
+  imports: [],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
-export class DashboardPage {}
+export class DashboardPage {
+  authService = inject(AuthService);
+}

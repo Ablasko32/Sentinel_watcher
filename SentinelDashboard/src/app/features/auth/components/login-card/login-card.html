@@ -28,9 +28,9 @@
     ></app-form-text-input>
 
     @if (errorMessage()) {
-      <p class="text-xs ring ring-red-500 rounded-sm bg-red-100/70 py-1 text-center text-red-500">
-        {{ errorMessage() }}
-      </p>
+      <p-message icon="pi pi-times-circle" size="small" severity="error">{{
+        errorMessage()
+      }}</p-message>
     }
 
     <p-button

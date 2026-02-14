@@ -4,12 +4,17 @@ namespace SentinelWebApi.DTOs
 {
     public class LoginUserDTO
     {
-        
-        [Required(ErrorMessage = "Email is required")]
+        [Required]
         [EmailAddress]
-        public required string Email { get; set; }
-     
-        [Required(ErrorMessage = "Paswword is required")]
+        public required string Email
+        {
+            get;
+            set => field = value.Trim();
+        }
+
+        [Required]
+        [MinLength(6)]
         public required string Password { get; set; }
+    
     }
 }
