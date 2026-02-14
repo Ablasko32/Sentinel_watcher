@@ -1,23 +1,33 @@
 <div>
   <p-float-label variant="on">
     @if (type() === 'password') {
-      <p-password
-        fluid
-        [invalid]="isInvalid()"
-        [formControl]="control()"
-        [toggleMask]="true"
-        [feedback]="false"
-        [id]="getId()"
-      />
+      <p-icon-field>
+        @if (icon()) {
+          <p-inputicon [class]="`pi ${icon()}`"></p-inputicon>
+        }
+        <p-password
+          fluid
+          [invalid]="isInvalid()"
+          [formControl]="control()"
+          [toggleMask]="true"
+          [feedback]="false"
+          [id]="getId()"
+        />
+      </p-icon-field>
     } @else {
-      <input
-        [type]="type()"
-        pInputText
-        fluid
-        [invalid]="isInvalid()"
-        [formControl]="control()"
-        [id]="getId()"
-      />
+      <p-iconfield>
+        @if (icon()) {
+          <p-inputicon [class]="`pi ${icon()}`"></p-inputicon>
+        }
+        <input
+          [type]="type()"
+          pInputText
+          fluid
+          [invalid]="isInvalid()"
+          [formControl]="control()"
+          [id]="getId()"
+        />
+      </p-iconfield>
     }
 
     @if (label()) {

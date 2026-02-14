@@ -4,13 +4,14 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/Aura';
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { SentinelPreset } from './lib/sentinel.preset';
+import { cookieInterceptor } from './core/api/intreceptors/cookieIntreceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([cookieInterceptor])),
     provideRouter(routes),
     providePrimeNG({
       theme: {

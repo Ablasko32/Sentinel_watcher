@@ -2,11 +2,9 @@
 {
     public class AppRoles
     {
-        public static readonly Role[] Roles = new[] { Role.Admin, Role.User };
-        public enum Role
-        {
-            Admin,
-            User,
-        }
+        public const string Admin = "Admin";
+        public const string User = "User";
+
+        public static readonly string[] Roles = new[] { Admin, User };
     }
 }

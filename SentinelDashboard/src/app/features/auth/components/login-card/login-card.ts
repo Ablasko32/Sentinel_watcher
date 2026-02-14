@@ -4,6 +4,7 @@ import { PasswordModule } from 'primeng/password';
 import { Button } from 'primeng/button';
 import { AuthService } from '../../../../core/api/services/auth-service';
 import { FormTextInput } from '../../../../shared/components/forms/form-text-input/form-text-input';
+import { Router } from '@angular/router';
 
 interface ILoginForm {
   email: FormControl<string>;
@@ -18,8 +19,10 @@ interface ILoginForm {
 })
 export class LoginCard {
   isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   loginForm = this.fb.group<ILoginForm>({
     email: this.fb.control('', {
@@ -34,14 +37,23 @@ export class LoginCard {
       this.loginForm.markAllAsTouched();
       return;
     }
-    this.isLoading.set(true);
-    const { email, password } = this.loginForm.getRawValue();
-    this.authService.loginUser(email, password);
-    this.isLoading.set(false);
-  }
+    const data = this.loginForm.getRawValue();
 
-  isInvalid(controlName: keyof ILoginForm) {
-    const control = this.loginForm.get(controlName);
-    return control?.invalid && (control.dirty || control.touched);
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.authService.loginUser(data).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.router.navigate(['app', 'dashboard']);
+        } else {
+          this.errorMessage.set(res.message ?? 'Login failed. Please try again.');
+          this.isLoading.set(false);
+        }
+      },
+      error: (err) => {
+        this.errorMessage.set(err.error?.message ?? 'Login failed. Please try again.');
+        this.isLoading.set(false);
+      },
+    });
   }
 }

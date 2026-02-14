@@ -11,6 +11,7 @@
       type="email"
       [control]="loginForm.controls.email"
       label="Email"
+      icon="pi-user"
       [errors]="{
         required: 'Email is required',
         email: 'Invalid email',
@@ -20,10 +21,17 @@
       type="password"
       [control]="loginForm.controls.password"
       label="Password"
+      icon="pi-key"
       [errors]="{
         required: 'Password is required',
       }"
     ></app-form-text-input>
+
+    @if (errorMessage()) {
+      <p class="text-xs ring ring-red-500 rounded-sm bg-red-100/70 py-1 text-center text-red-500">
+        {{ errorMessage() }}
+      </p>
+    }
 
     <p-button
       raised

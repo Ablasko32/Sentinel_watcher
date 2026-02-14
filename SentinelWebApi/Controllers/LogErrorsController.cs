@@ -31,7 +31,7 @@ namespace SentinelWebApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving the error list.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<LogErrorDTO>.ApiError(new[] { "An error occurred while retrieving the error list." }));
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse.ApiError("An error occurred while retrieving the error list."));
             }
         }
 
@@ -43,7 +43,7 @@ namespace SentinelWebApi.Controllers
                 var error = await _logErrorService.GetErrorByIdAsync(id, cancellationToken);
                 if (error == null)
                 {
-                    return NotFound(ApiResponse<LogErrorDTO>.ApiError(new[] { $"Error with {id} was not found." }));
+                    return NotFound(ApiResponse.ApiError($"Error with {id} was not found."));
                 }
 
                 return Ok(ApiResponse<LogErrorDTO>.ApiSuccess(error));
@@ -51,7 +51,7 @@ namespace SentinelWebApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the error with ID {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<LogErrorDTO>.ApiError(new[] { $"An error occurred while retrieving the error with ID {id}." }));
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse.ApiError($"An error occurred while retrieving the error with ID {id}."));
             }
         }
 
@@ -63,14 +63,14 @@ namespace SentinelWebApi.Controllers
                 var success = await _logErrorService.DeleteErrorAsync(id, cancellationToken);
                 if (!success)
                 {
-                    return NotFound(ApiResponse<LogErrorDTO>.ApiError(new[] { $"Error with {id} was not found." }));
+                    return NotFound(ApiResponse.ApiError($"Error with {id} was not found."));
                 }
                 return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while deleting the error with ID {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<LogErrorDTO>.ApiError(new[] { $"An error occurred while deleting the error with ID {id}." }));
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse.ApiError($"An error occurred while deleting the error with ID {id}."));
             }
         }
     }

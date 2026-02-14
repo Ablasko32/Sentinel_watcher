@@ -2,14 +2,24 @@ import { Component, input } from '@angular/core';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { Message, MessageModule } from 'primeng/message';
 import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
 import { PasswordModule } from 'primeng/password';
+import { InputIconModule } from 'primeng/inputicon';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 export type TextInputType = 'text' | 'email' | 'password';
 
 @Component({
   selector: 'app-form-text-input',
-  imports: [InputTextModule, MessageModule, FloatLabelModule, ReactiveFormsModule, PasswordModule],
+  imports: [
+    InputTextModule,
+    MessageModule,
+    IconFieldModule,
+    FloatLabelModule,
+    InputIconModule,
+    ReactiveFormsModule,
+    PasswordModule,
+  ],
   templateUrl: './form-text-input.html',
   styleUrl: './form-text-input.css',
 })
@@ -18,6 +28,7 @@ export class FormTextInput<T = string> {
   label = input<string>();
   type = input<TextInputType>('text');
   errors = input<Record<string, string>>({});
+  icon = input<string>();
 
   isInvalid() {
     const ctrl = this.control();

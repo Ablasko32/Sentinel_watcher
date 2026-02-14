@@ -17,6 +17,18 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+//cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularFe",  policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") //TEMP TODO
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 //DB
 builder.Services.AddDbContext<SentinelContext>(opt =>
 {
@@ -48,8 +60,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Seed roles and admin user and migrate database if pending migrations exist
-await app.MigrateDbAsync();
-await app.SeedRolesAsync();
-await app.SeedAdminUserAsync();
+await app.InitializeDbAsync();
+
+app.UseCors("AngularFe");
 
 app.Run();
