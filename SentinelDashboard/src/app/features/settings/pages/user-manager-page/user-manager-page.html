@@ -1,0 +1,34 @@
+<h2 class="mb-4 text-muted-color">Manage your Team</h2>
+<p-button (click)="show()" label="Add User" icon="pi pi-plus" size="small"></p-button>
+<p-table [loading]="isLoading()" [value]="users()">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-user>
+    <tr>
+      <td class="capitalize">{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td class="uppercase text-xs tracking-wide">{{ user.role }}</td>
+      <td class="text-end flex gap-2 justify-end">
+        <p-button
+          size="small"
+          severity="danger"
+          icon="pi pi-trash"
+          (click)="confirmDelete(user)"
+        ></p-button>
+        <p-button
+          size="small"
+          severity="contrast"
+          icon="pi pi-pencil"
+          (click)="openEditDialog(user)"
+        />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<p-confirmdialog />

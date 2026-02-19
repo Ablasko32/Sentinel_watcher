@@ -30,19 +30,19 @@ export class Sidebar {
     {
       label: 'Dashboard',
       icon: 'pi pi-home',
-      route: 'app/dashboard',
+      route: 'dashboard',
     },
 
     {
       label: 'Logs',
       icon: 'pi pi-file',
-      route: 'app/logs',
+      route: 'logs',
     },
 
     {
       label: 'Settings',
       icon: 'pi pi-cog',
-      route: 'app/settings',
+      route: 'settings',
     },
   ];
 

@@ -3,6 +3,16 @@ export interface ILoginUserRequest {
   password: string;
 }
 
+export interface IUpdateUserRequest {
+  username?: string;
+  newPassword?: string;
+  email?: string;
+}
+
+export interface ICreateUserRequest extends ILoginUserRequest {
+  username: string;
+}
+
 export interface IAppUser {
   id: string;
   email: string;

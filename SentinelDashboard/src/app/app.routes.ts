@@ -10,7 +10,7 @@ export const routes: Routes = [
   },
   {
     path: 'app',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadComponent: () =>
       import('./shared/components/layouts/main-layout/main-layout').then((m) => m.MainLayout),
     children: [
@@ -24,6 +24,15 @@ export const routes: Routes = [
         path: 'logs',
         loadChildren: () =>
           import('./features/log-list/log-list.routes').then((m) => m.LogListRoutes),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./features/settings/components/layouts/settings-layout/settings-layout').then(
+            (m) => m.SettingsLayout,
+          ),
+        loadChildren: () =>
+          import('./features/settings/settings.routes').then((m) => m.SettingsRoutes),
       },
     ],
   },

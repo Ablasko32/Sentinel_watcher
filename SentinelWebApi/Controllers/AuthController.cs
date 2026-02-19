@@ -40,7 +40,7 @@ namespace SentinelWebApi.Controllers
                 if (result.Succeeded)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
-                    return Ok(ApiResponse<UserDTO>.ApiSuccess(user.ToUserDTO(roles),"Login successful"));
+                    return Ok(ApiResponse<UserDTO>.ApiSuccess(user.ToUserDTO(roles), "Login successful"));
                 }
                 else
                 {
@@ -146,7 +146,9 @@ namespace SentinelWebApi.Controllers
                 }
                 var newUser = dto.ToAppUser();
                 var result = await _userManager.CreateAsync(newUser);
-                if (result.Succeeded)
+                var rolesResult = await _userManager.AddToRoleAsync(newUser, AppRoles.User);
+
+                if (result.Succeeded && rolesResult.Succeeded)
                 {
                     return Ok(ApiResponse.ApiSuccess("User created successfully"));
                 }
@@ -160,6 +162,88 @@ namespace SentinelWebApi.Controllers
                 _logger.LogError(ex, "An error occurred while trying to create a new user.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ApiResponse.ApiError("Unexpected error occurred while trying to create a new user"));
+            }
+        }
+
+        [HttpGet("users")]
+        [Authorize(Roles = Admin)]
+        public async Task<ActionResult<ApiResponse<List<UserDTO>>>> GetAllUsersAsync()
+        {
+            try
+            {
+                var users = await _userManager.GetUsersInRoleAsync(AppRoles.User);
+
+                var results = users.Select(u =>
+                {
+                    return new UserDTO
+                    {
+                        Email = u.Email!,
+                        Role = AppRoles.User,
+                        Id = u.Id,
+                        Username = u.UserName!
+                    };
+                }).ToList();
+
+                return ApiResponse<List<UserDTO>>.ApiSuccess(results);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fething users");
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse.ApiError("Error fething users"));
+            }
+        }
+
+        [HttpPut("update/{userId}")]
+        public async Task<ActionResult<ApiResponse>> UpdateUserAsync([FromBody] UpdateUserDTO dto, string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return BadRequest(ApiResponse.ApiError("User not found"));
+                }
+                if (!String.IsNullOrEmpty(dto.Email) && user.Email !=dto.Email)
+                {
+                    user.Email = dto.Email;
+                    user.NormalizedEmail = dto.Email.ToUpper();
+
+                    var changeMailResult = await _userManager.UpdateAsync(user);
+                    if (!changeMailResult.Succeeded)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError,
+                            ApiResponse.ApiError("Unexpected error occurred while trying to change the email"));
+                    }
+                }
+                if (!String.IsNullOrEmpty(dto.UserName) && dto.UserName !=user.UserName)
+                {
+                    user.UserName = dto.UserName;
+                    var usernameResult = await _userManager.UpdateAsync(user);
+                    if (!usernameResult.Succeeded)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError,
+                           ApiResponse.ApiError("Unexpected error occurred while trying to change the username"));
+                    }
+                }
+                if (!String.IsNullOrEmpty(dto.NewPassword))
+                {
+                    user = await _userManager.FindByIdAsync(userId);
+
+                    await _userManager.RemovePasswordAsync(user);
+                    var addResult = await _userManager.AddPasswordAsync(user, dto.NewPassword);
+                    if (!addResult.Succeeded)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError,
+                            ApiResponse.ApiError(string.Join(", ", addResult.Errors.Select(e => e.Description))));
+                    }
+                }
+                return ApiResponse.ApiSuccess("User updated successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while trying to update the user.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ApiResponse.ApiError("Unexpected error occurred while trying to update the user"));
             }
         }
     }

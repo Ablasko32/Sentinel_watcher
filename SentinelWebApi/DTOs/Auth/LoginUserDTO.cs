@@ -4,7 +4,6 @@ namespace SentinelWebApi.DTOs
 {
     public class LoginUserDTO
     {
-        [Required]
         [EmailAddress]
         public required string Email
         {
@@ -12,7 +11,6 @@ namespace SentinelWebApi.DTOs
             set => field = value.Trim();
         }
 
-        [Required]
         [MinLength(6)]
         public required string Password { get; set; }
     

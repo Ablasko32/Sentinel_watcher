@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { IAppUser, ILoginUserRequest } from '../models/authModels';
+import {
+  IAppUser,
+  ICreateUserRequest,
+  ILoginUserRequest,
+  IUpdateUserRequest,
+} from '../models/authModels';
 import { IApiResponse } from '../models/apiResponse';
 
 @Injectable({
@@ -32,5 +37,20 @@ export class AuthService {
   checkAuthStatus(): Observable<IApiResponse<IAppUser>> {
     const url = `${this.baseUrl}/status`;
     return this.httpClient.get<IApiResponse<IAppUser>>(url);
+  }
+
+  createUser(data: ICreateUserRequest): Observable<IApiResponse<void>> {
+    const url = `${this.baseUrl}/create`;
+    return this.httpClient.post<IApiResponse<void>>(url, data);
+  }
+
+  getAllUsers(): Observable<IApiResponse<IAppUser[]>> {
+    const url = `${this.baseUrl}/users`;
+    return this.httpClient.get<IApiResponse<IAppUser[]>>(url);
+  }
+
+  updateUser(userId: string, data: IUpdateUserRequest): Observable<IApiResponse<void>> {
+    const url = `${this.baseUrl}/update/${userId}`;
+    return this.httpClient.put<IApiResponse<void>>(url, data);
   }
 }

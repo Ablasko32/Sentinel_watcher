@@ -1,0 +1,67 @@
+<form class="flex flex-col gap-4 p-2" (ngSubmit)="onSubmit()" [formGroup]="form">
+  <app-form-text-input
+    [control]="form.controls.email"
+    label="Email"
+    icon="pi-envelope"
+    [errors]="{
+      required: 'Email is required',
+      email: 'Invalid email format',
+    }"
+  ></app-form-text-input>
+  <app-form-text-input
+    [control]="form.controls.username"
+    label="Username"
+    icon="pi-user"
+    [errors]="{
+      required: 'Username is required',
+    }"
+  ></app-form-text-input>
+  @if (!editMode()) {
+    <app-form-text-input
+      type="password"
+      [control]="form.controls.password"
+      label="Password"
+      icon="pi-key"
+      [errors]="{
+        required: 'Password is required',
+        minlength: 'Password must be at least 6 characters',
+      }"
+    ></app-form-text-input>
+    <app-form-text-input
+      type="password"
+      [control]="form.controls.confirmPassword"
+      label="Confirm Password"
+      icon="pi-key"
+      [errors]="{
+        required: 'Confirm Password is required',
+        minlength: 'Password must be at least 6 characters',
+      }"
+    ></app-form-text-input>
+  } @else {
+    <app-form-text-input
+      type="password"
+      icon="pi-key"
+      [errors]="{
+        minlength: 'Password must be at least 6 characters',
+      }"
+      [control]="form.controls.newPassword"
+      label="New Password"
+    />
+  }
+
+  <div class="flex items-center gap-2">
+    <p-button
+      type="submit"
+      [label]="editMode() ? 'Update User' : 'Create User'"
+      [icon]="editMode() ? 'pi pi-user-edit' : 'pi pi-user-plus'"
+      [disabled]="form.invalid"
+    />
+    <p-button
+      type="button"
+      variant="outlined"
+      label="Reset"
+      icon="pi pi-refresh"
+      (click)="reset()"
+    />
+  </div>
+</form>
