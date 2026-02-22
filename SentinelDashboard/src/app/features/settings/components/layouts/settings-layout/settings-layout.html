@@ -1,13 +1,13 @@
 <app-page-layout [showBackButton]="false">
   <h1 header>Settings</h1>
   <p subtitle>Here you can edit Sentinel settings</p>
-  <p-tabs body [value]="tabs[0].route">
+  <p-tabs body [value]="activeRoute()">
     <p-tablist>
       @for (tab of tabs; track tab.route) {
         <p-tab
           [routerLink]="tab.route"
           [value]="tab.route"
-          class="flex items-center !gap-2 text-inherit"
+          class="flex items-center gap-2! text-inherit"
         >
           <i [class]="tab.icon"></i>
           <span>{{ tab.label }}</span>

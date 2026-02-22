@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SentinelCore.DAL.Data.Models;
+using SentinelCore.DTOs.Pagination;
 using SentinelWebApi.DTOs;
 using SentinelWebApi.DTOs.ApiResponse;
 using SentinelWebApi.DTOs.Auth;
+using SentinelWebApi.DTOs.Filters;
 using SentinelWebApi.Mapping.Auth;
 using static SentinelCore.DAL.Data.Models.AppRoles;
 
@@ -154,7 +157,8 @@ namespace SentinelWebApi.Controllers
                 }
                 else
                 {
-                    throw new Exception("Identity failed to create the user.");
+                    throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)) + " " +
+                                        string.Join(", ", rolesResult.Errors.Select(e => e.Description)));
                 }
             }
             catch (Exception ex)
@@ -167,24 +171,60 @@ namespace SentinelWebApi.Controllers
 
         [HttpGet("users")]
         [Authorize(Roles = Admin)]
-        public async Task<ActionResult<ApiResponse<List<UserDTO>>>> GetAllUsersAsync()
+        public async Task<ActionResult<ApiResponse<PaginatedResult<UserDTO>>>> GetAllUsersAsync([FromQuery] BaseSearchFilter filter)
         {
             try
             {
-                var users = await _userManager.GetUsersInRoleAsync(AppRoles.User);
+                var usersInRole = await _userManager.GetUsersInRoleAsync(AppRoles.User);
 
-                var results = users.Select(u =>
+                var totalCount = usersInRole.Count;
+
+                var query = usersInRole.AsQueryable();
+
+                if (!String.IsNullOrEmpty(filter.SearchTerm))
                 {
-                    return new UserDTO
+                    var searchTerm = filter.SearchTerm.ToLower();
+                    query = query.Where(u => (u.UserName != null && u.UserName.Contains(searchTerm)) 
+                                              || (u.Email !=null && u.Email.Contains(searchTerm)));
+                }
+
+                if (filter.SortOrder == "asc")
+                {
+                    query = filter.SortField switch
                     {
-                        Email = u.Email!,
-                        Role = AppRoles.User,
-                        Id = u.Id,
-                        Username = u.UserName!
+                        "email" => query.OrderBy(u => u.Email),
+                        "username" => query.OrderBy(u => u.UserName),
+                        _ => query.OrderBy(u => u.UserName),
                     };
+                }
+                else
+                {
+                    query = filter.SortField switch
+                    {
+                        "email" => query.OrderByDescending(u => u.Email),
+                        "username" => query.OrderByDescending(u => u.UserName),
+                        _ => query.OrderBy(u => u.UserName),
+                    };
+                }
+
+                var pagedUsers = query.Skip(filter.Skip).Take(filter.Take).Select(u => new UserDTO
+                {
+                    Email = u.Email!,
+                    Username = u.UserName!,
+                    Id = u.Id,
+                    Role = AppRoles.User
                 }).ToList();
 
-                return ApiResponse<List<UserDTO>>.ApiSuccess(results);
+                PaginatedResult<UserDTO> paginatedResult = new PaginatedResult<UserDTO>
+                {
+                    Items = pagedUsers,
+                    TotalCount = totalCount,
+                    Page = (filter.Skip / filter.Take) + 1,
+                    PageSize = filter.Take,
+                    TotalPages = (int)Math.Ceiling((double)totalCount / filter.Take)
+                };
+
+                return ApiResponse<PaginatedResult<UserDTO>>.ApiSuccess(paginatedResult);
             }
             catch (Exception ex)
             {
@@ -194,6 +234,7 @@ namespace SentinelWebApi.Controllers
         }
 
         [HttpPut("update/{userId}")]
+        [Authorize(Roles =Admin)]
         public async Task<ActionResult<ApiResponse>> UpdateUserAsync([FromBody] UpdateUserDTO dto, string userId)
         {
             try
@@ -203,7 +244,7 @@ namespace SentinelWebApi.Controllers
                 {
                     return BadRequest(ApiResponse.ApiError("User not found"));
                 }
-                if (!String.IsNullOrEmpty(dto.Email) && user.Email !=dto.Email)
+                if (!String.IsNullOrEmpty(dto.Email) && user.Email != dto.Email)
                 {
                     user.Email = dto.Email;
                     user.NormalizedEmail = dto.Email.ToUpper();
@@ -215,7 +256,7 @@ namespace SentinelWebApi.Controllers
                             ApiResponse.ApiError("Unexpected error occurred while trying to change the email"));
                     }
                 }
-                if (!String.IsNullOrEmpty(dto.UserName) && dto.UserName !=user.UserName)
+                if (!String.IsNullOrEmpty(dto.UserName) && dto.UserName != user.UserName)
                 {
                     user.UserName = dto.UserName;
                     var usernameResult = await _userManager.UpdateAsync(user);
@@ -244,6 +285,26 @@ namespace SentinelWebApi.Controllers
                 _logger.LogError(ex, "An error occurred while trying to update the user.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ApiResponse.ApiError("Unexpected error occurred while trying to update the user"));
+            }
+        }
+
+        [HttpGet("email-exists")]
+        [Authorize]
+        public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                var exists = user != null;
+                if (!exists)
+                {
+                    return Ok(ApiResponse<bool>.ApiSuccess(exists,"Email avaliable"));
+                }
+                else return Ok(ApiResponse<bool>.ApiSuccess(exists,"User exists"));
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error checking email for {email}", email);
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse.ApiError("Unexpected error trying to check email."));
             }
         }
     }

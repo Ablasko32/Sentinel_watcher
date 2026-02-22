@@ -6,6 +6,7 @@
     [errors]="{
       required: 'Email is required',
       email: 'Invalid email format',
+      emailExists: 'Email already exists',
     }"
   ></app-form-text-input>
   <app-form-text-input
@@ -35,6 +36,7 @@
       [errors]="{
         required: 'Confirm Password is required',
         minlength: 'Password must be at least 6 characters',
+        passwordMismatch: 'Passwords do not match',
       }"
     ></app-form-text-input>
   } @else {
@@ -51,12 +53,16 @@
 
   <div class="flex items-center gap-2">
     <p-button
+      class="flex-1"
+      styleClass="w-full"
       type="submit"
-      [label]="editMode() ? 'Update User' : 'Create User'"
+      [label]="editMode() ? 'Update' : 'Create'"
       [icon]="editMode() ? 'pi pi-user-edit' : 'pi pi-user-plus'"
       [disabled]="form.invalid"
     />
     <p-button
+      class="flex-1"
+      styleClass="w-full"
       type="button"
       variant="outlined"
       label="Reset"

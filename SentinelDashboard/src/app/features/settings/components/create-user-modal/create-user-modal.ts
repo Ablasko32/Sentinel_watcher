@@ -12,6 +12,8 @@ import { AuthService } from '../../../../core/api/services/auth-service';
 import { MessageService } from 'primeng/api';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { IAppUser } from '../../../../core/api/models/authModels';
+import { confirmPasswordValidator } from '../../../../shared/validators/passwordValidators';
+import { validateEmailAsync } from '../../../../shared/validators/async/asyncEmailValidators';
 
 interface ICreateUserForm {
   username: FormControl<string>;
@@ -49,30 +51,34 @@ export class CreateUserModal implements OnInit {
   private initForm(editMode: boolean) {
     const user = this.config.data?.user;
 
-    this.form = this.fb.group<ICreateUserForm>({
-      username: this.fb.control(user?.username ?? '', {
-        validators: editMode ? [] : [Validators.required],
-        nonNullable: true,
-      }),
-      email: this.fb.control(user?.email ?? '', {
-        validators: editMode ? [Validators.email] : [Validators.required, Validators.email],
-        nonNullable: true,
-      }),
-      // Create mode fields
-      password: this.fb.control('', {
-        validators: editMode ? [] : [Validators.required, Validators.minLength(6)],
-        nonNullable: true,
-      }),
-      confirmPassword: this.fb.control('', {
-        validators: editMode ? [] : [Validators.required, Validators.minLength(6)],
-        nonNullable: true,
-      }),
-      // Edit mode fields
-      newPassword: this.fb.control('', {
-        validators: editMode ? [Validators.minLength(6)] : [],
-        nonNullable: true,
-      }),
-    });
+    this.form = this.fb.group<ICreateUserForm>(
+      {
+        username: this.fb.control(user?.username ?? '', {
+          validators: editMode ? [] : [Validators.required],
+          nonNullable: true,
+        }),
+        email: this.fb.control(user?.email ?? '', {
+          validators: editMode ? [Validators.email] : [Validators.required, Validators.email],
+          nonNullable: true,
+          asyncValidators: editMode ? [] : [validateEmailAsync(this.authService)],
+        }),
+        // Create mode fields
+        password: this.fb.control('', {
+          validators: editMode ? [] : [Validators.required, Validators.minLength(6)],
+          nonNullable: true,
+        }),
+        confirmPassword: this.fb.control('', {
+          validators: editMode ? [] : [Validators.required, Validators.minLength(6)],
+          nonNullable: true,
+        }),
+        // Edit mode fields
+        newPassword: this.fb.control('', {
+          validators: editMode ? [Validators.minLength(6)] : [],
+          nonNullable: true,
+        }),
+      },
+      { validators: editMode ? [] : [confirmPasswordValidator] },
+    );
   }
 
   onSubmit() {
@@ -121,7 +127,7 @@ export class CreateUserModal implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to create user',
+          detail: err?.error?.message || 'Failed to create user',
         });
       },
     });

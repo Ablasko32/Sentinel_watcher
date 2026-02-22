@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
@@ -8,7 +8,9 @@ import {
   ILoginUserRequest,
   IUpdateUserRequest,
 } from '../models/authModels';
-import { IApiResponse } from '../models/apiResponse';
+import { IApiResponse, IPaginatedApiResponse } from '../models/apiResponse';
+import { IPaginatedRequest } from '../models/apiRequest';
+import { buildHttpParams } from '../helpers/httpParamBuilder';
 
 @Injectable({
   providedIn: 'root',
@@ -44,13 +46,20 @@ export class AuthService {
     return this.httpClient.post<IApiResponse<void>>(url, data);
   }
 
-  getAllUsers(): Observable<IApiResponse<IAppUser[]>> {
+  getAllUsers(filters: IPaginatedRequest): Observable<IPaginatedApiResponse<IAppUser>> {
     const url = `${this.baseUrl}/users`;
-    return this.httpClient.get<IApiResponse<IAppUser[]>>(url);
+    let params = buildHttpParams(filters);
+    return this.httpClient.get<IPaginatedApiResponse<IAppUser>>(url, { params });
   }
 
   updateUser(userId: string, data: IUpdateUserRequest): Observable<IApiResponse<void>> {
     const url = `${this.baseUrl}/update/${userId}`;
     return this.httpClient.put<IApiResponse<void>>(url, data);
+  }
+
+  checkEmailExists(email: string): Observable<IApiResponse<{ exists: boolean }>> {
+    const url = `${this.baseUrl}/email-exists`;
+    const params = new HttpParams().set('email', email);
+    return this.httpClient.get<IApiResponse<{ exists: boolean }>>(url, { params });
   }
 }

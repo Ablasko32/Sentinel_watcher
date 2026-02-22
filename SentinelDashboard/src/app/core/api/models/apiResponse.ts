@@ -8,9 +8,13 @@ export interface IPaginatedApiResponse<T = any> {
   message?: string;
 }
 
-export interface IPaginatedResponse<T = any> {
+export interface IPaginatedResponse<T = any> extends IPagination {
   items: T[];
+}
+
+export interface IPagination {
   totalPages: number;
+  totalCount: number;
   pageSize: number;
   page: number;
   hasPreviousPage: boolean;
